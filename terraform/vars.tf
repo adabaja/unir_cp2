@@ -1,6 +1,6 @@
 variable "location" {
   type    = string
-  default = "swedencentral"
+  default = "centralus"  # swedencentral bloqueada
 }
 
 variable "prefix" {
