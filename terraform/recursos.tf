@@ -136,3 +136,13 @@ resource "azurerm_linux_virtual_machine" "vm" {
 output "vm_public_ip" {
   value = azurerm_public_ip.pip.ip_address
 }
+
+# Genera el inventario de Ansible con la IP real de la VM:
+resource "local_file" "ansible_inventory" {
+  filename = "${path.module}/../ansible/hosts"
+  content = templatefile("${path.module}/inventory.tmpl", {
+    vm_ip      = azurerm_public_ip.pip.ip_address
+    admin_user = var.admin_username
+    ssh_key    = var.ssh_private_key_path
+  })
+}

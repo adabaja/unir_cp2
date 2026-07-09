@@ -1,0 +1,2 @@
+[web]
+64.236.189.172 ansible_user=azureuser ansible_ssh_private_key_file=~/.ssh/cp2_vm ansible_python_interpreter=/usr/bin/python3

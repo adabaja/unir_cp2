@@ -18,3 +18,9 @@ variable "ssh_public_key_path" {
   type    = string
   default = "~/.ssh/cp2_vm.pub"
 }
+
+# Ruta a la clave SSH PRIVADA que usará Ansible para conectarse a la VM
+variable "ssh_private_key_path" {
+  type    = string
+  default = "~/.ssh/cp2_vm"
+}
