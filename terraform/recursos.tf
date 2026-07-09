@@ -146,3 +146,13 @@ resource "local_file" "ansible_inventory" {
     ssh_key    = var.ssh_private_key_path
   })
 }
+
+# Credenciales admin del ACR: se consultan bajo demanda (nunca se escriben en el repo)
+output "acr_admin_user" {
+  value = azurerm_container_registry.acr.admin_username
+}
+
+output "acr_admin_password" {
+  value     = azurerm_container_registry.acr.admin_password
+  sensitive = true
+}

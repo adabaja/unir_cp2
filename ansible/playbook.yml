@@ -1,0 +1,47 @@
+# Despliegue del servidor web como contenedor Podman sobre la VM.
+# Las credenciales del ACR llegan por variables externas (-e); nunca en el repo.
+- name: Configurar la VM y desplegar app-web en Podman
+  hosts: web
+  become: true
+
+  vars:
+    container_name: app-web
+    image: "{{ acr_server }}/app-web:casopractico2"
+
+  tasks:
+    - name: Instalar Podman
+      ansible.builtin.apt:
+        name: podman
+        state: present
+        update_cache: true
+
+    - name: Autenticarse en el ACR
+      containers.podman.podman_login:
+        registry: "{{ acr_server }}"
+        username: "{{ acr_user }}"
+        password: "{{ acr_password }}"
+
+    - name: Descargar la imagen de la app desde el ACR
+      containers.podman.podman_image:
+        name: "{{ image }}"
+        force: true    # re-descarga si el tag cambió (evita servir imagen cacheada vieja)
+
+    - name: Crear el contenedor y su unidad systemd (servicio del SO)
+      containers.podman.podman_container:
+        name: "{{ container_name }}"
+        image: "{{ image }}"
+        state: created
+        ports:
+          - "80:80"
+          - "443:443"
+        generate_systemd:
+          path: /etc/systemd/system
+          new: true
+          restart_policy: always
+
+    - name: Habilitar y arrancar el servicio (persistente a reinicios)
+      ansible.builtin.systemd:
+        name: "container-{{ container_name }}"
+        daemon_reload: true
+        enabled: true
+        state: started
