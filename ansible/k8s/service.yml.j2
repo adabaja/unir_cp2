@@ -1,0 +1,14 @@
+# Service LoadBalancer: AKS crea una IP pública en Azure y reparte
+# el tráfico del puerto 80 hacia el 8000 de los pods con label app-k8s
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-k8s
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: app-k8s
+  ports:
+    - port: 80
+      targetPort: 8000

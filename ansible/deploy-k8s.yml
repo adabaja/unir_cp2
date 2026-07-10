@@ -1,0 +1,38 @@
+# Despliegue de la app con almacenamiento persistente sobre AKS.
+# Se ejecuta desde el nodo de control contra el kubeconfig local (connection: local).
+- name: Desplegar app-k8s con persistencia sobre AKS
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Crear el PVC
+      kubernetes.core.k8s:
+        state: present
+        template: k8s/pvc.yml.j2
+
+    - name: Crear el Deployment y esperar a que el pod esté listo
+      kubernetes.core.k8s:
+        state: present
+        template: k8s/deployment.yml.j2
+        wait: true
+        wait_timeout: 300
+
+    - name: Crear el Service LoadBalancer
+      kubernetes.core.k8s:
+        state: present
+        template: k8s/service.yml.j2
+
+    - name: Esperar la IP pública del LoadBalancer
+      kubernetes.core.k8s_info:
+        kind: Service
+        name: app-k8s
+        namespace: default
+      register: svc
+      until: svc.resources[0].status.loadBalancer.ingress is defined
+      retries: 30
+      delay: 10
+
+    - name: Mostrar la URL de la aplicación
+      ansible.builtin.debug:
+        msg: "App disponible en: http://{{ svc.resources[0].status.loadBalancer.ingress[0].ip }}"

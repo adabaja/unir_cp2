@@ -1,0 +1,13 @@
+# PVC: solicita 1Gi de disco persistente a la storage class managed-csi de AKS
+# (Azure Disk). RWO = un solo nodo puede montarlo: 1 pod, 1 worker.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: app-k8s-datos
+  namespace: default
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: managed-csi
+  resources:
+    requests:
+      storage: 1Gi
