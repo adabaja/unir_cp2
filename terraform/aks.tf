@@ -1,4 +1,4 @@
-# Cluster de Kubernetes gestionado (AKS) — Criterio 3.
+# Cluster de Kubernetes gestionado (AKS).
 # Un único node pool con 1 nodo: es el "único worker" que pide el enunciado.
 resource "azurerm_kubernetes_cluster" "aks" {
   name                = "aks-${var.prefix}"
